@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { useMainPlayer } = require("discord-player");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,7 +17,8 @@ module.exports = {
             }
 
             const search = interaction.options.getString('search');
-            const playResult = await client.player.play(
+            const player = useMainPlayer();
+            const playResult = await player.play(
                 interaction.member.voice.channel,
                 search,
                 { requestedBy: interaction.user }
