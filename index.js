@@ -1,17 +1,17 @@
-const glob = require('glob');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const glob = require('glob');
 const path = require('node:path');
-require('dotenv').config();
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 client.commands = new Collection();
 
-const commandsPath = path.join(__dirname, '/commands');
-const eventsPath = path.join(__dirname, '/events');
-const commandFiles = glob.sync('**/*.js', { cwd: commandsPath });
-const eventFiles = glob.sync('**/*.js', { cwd: eventsPath });
+
 
 // Command handler
+
+const commandsPath = path.join(__dirname, '/commands');
+const commandFiles = glob.sync('**/*.js', { cwd: commandsPath });
+
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const command = require(filePath);
@@ -22,7 +22,14 @@ for (const file of commandFiles) {
         console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
     }
 }
+
+
+
 // Event handler
+
+const eventsPath = path.join(__dirname, '/events');
+const eventFiles = glob.sync('**/*.js', { cwd: eventsPath });
+
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const event = require(filePath);
@@ -32,4 +39,23 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args, client));
     }
 }
+
+
+
+// Audio player
+
+const { Player } = require("discord-player");
+
+client.player = new Player(client, {
+    ytdlOptions: {
+        quality: "highestaudio",
+        highWaterMark: 1 << 25
+    }
+})
+
+
+
+// Log in
+
+require('dotenv').config();
 client.login(process.env.DISCORD_TOKEN);
