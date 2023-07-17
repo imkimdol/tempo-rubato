@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const glob = require('glob');
 const path = require('node:path');
@@ -57,6 +59,4 @@ client.player.extractors.loadDefault();
 
 
 // Log in
-
-require('dotenv').config();
 client.login(process.env.DISCORD_TOKEN);
