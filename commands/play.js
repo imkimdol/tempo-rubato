@@ -28,7 +28,7 @@ module.exports = {
         
             interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${client.queue.size + 1}\``);
         } catch (err) {
-            interaction.editReply('An error occured while trying to play song!');
+            interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);
         }
     },

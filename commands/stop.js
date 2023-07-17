@@ -19,7 +19,7 @@ module.exports = {
             
             interaction.editReply(`Stopped playback.`);
         } catch (err) {
-            interaction.editReply('An error occured!');
+            interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);
         }
     },
