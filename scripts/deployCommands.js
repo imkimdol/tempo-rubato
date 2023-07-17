@@ -21,14 +21,17 @@ for (const file of commandFiles) {
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 // Delete commands
-// guild-based commands
-rest.put(Routes.applicationGuildCommands(process.env.BOT_ID, process.env.TEST_GUILD_ID), { body: [] })
-    .then(() => console.log('Successfully deleted all guild commands.'))
-    .catch(console.error);
-// global commands
-rest.put(Routes.applicationCommands(process.env.BOT_ID), { body: [] })
-    .then(() => console.log('Successfully deleted all application commands.'))
-    .catch(console.error);
+if (args[0] == 'all') {
+    // global commands
+    rest.put(Routes.applicationCommands(process.env.BOT_ID), { body: [] })
+        .then(() => console.log('Successfully deleted all application commands.'))
+        .catch(console.error);
+} else {
+    // guild-based commands
+    rest.put(Routes.applicationGuildCommands(process.env.BOT_ID, process.env.TEST_GUILD_ID), { body: [] })
+        .then(() => console.log('Successfully deleted all guild commands.'))
+        .catch(console.error);
+}
 
 // and deploy your commands!
 (async () => {
