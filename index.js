@@ -48,13 +48,13 @@ for (const file of eventFiles) {
 
 const { Player } = require("discord-player");
 
-client.player = new Player(client, {
+const player = new Player(client, {
     ytdlOptions: {
         quality: "highestaudio",
         highWaterMark: 1 << 25
     }
 })
-client.player.extractors.loadDefault();
+player.extractors.loadDefault();
 
 
 

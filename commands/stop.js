@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { useQueue } = require("discord-player");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,12 +12,11 @@ module.exports = {
             if (!interaction.member.voice.channel) {
                 return interaction.editReply('You need to be in a Voice Channel.');
             }
-            if (!client.queue || !client.queue.currentTrack) {
-                return interaction.editReply('Bot is currently not playing.');
-            }
-
-            await client.playerNode.stop(true);
             
+            const queue = useQueue(interaction.guild.id);
+            if (!queue) return interaction.editReply('Bot is currently not playing.');
+
+            queue.node.stop(true);
             interaction.editReply(`Stopped playback.`);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);

@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { GuildQueuePlayerNode } = require('discord-player');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,17 +15,14 @@ module.exports = {
                 return interaction.editReply('You need to be in a Voice Channel to play a song.');
             }
 
-            const input = interaction.options.getString('input');
-
+            const search = interaction.options.getString('search');
             const playResult = await client.player.play(
                 interaction.member.voice.channel,
-                input,
+                search,
                 { requestedBy: interaction.user }
             );
-            if (!client.queue) client.queue = playResult.queue;
-            if (!client.playerNode) client.playerNode = new GuildQueuePlayerNode(client.queue);
-        
-            interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${client.queue.size + 1}\``);
+
+            interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${playResult.queue.size + 1}\``);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);
