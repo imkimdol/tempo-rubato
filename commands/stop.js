@@ -17,7 +17,10 @@ module.exports = {
             if (!queue) return interaction.editReply('Bot is currently not playing.');
 
             queue.delete();
-            interaction.editReply(`Stopped playback.`);
+
+            const message = await interaction.editReply(`Stopped playback.`);
+            const timeout = parseInt(process.env.MESSAGE_TIMEOUT);
+            if (timeout > 0) setTimeout(() => message.delete(), timeout);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

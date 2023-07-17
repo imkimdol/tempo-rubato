@@ -24,7 +24,9 @@ module.exports = {
                 { requestedBy: interaction.user }
             );
 
-            interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${playResult.queue.size + 1}\``);
+            const message = await interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${playResult.queue.size + 1}\``);
+            const timeout = parseInt(process.env.MESSAGE_TIMEOUT);
+            if (timeout > 0) setTimeout(() => message.delete(), timeout);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);
