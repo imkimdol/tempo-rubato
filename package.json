@@ -16,6 +16,9 @@
     "glob": "^10.3.2",
     "ytdl-core": "^4.11.5"
   },
+  "resolutions": {
+    "string-width": "4.2.3"
+  },
   "scripts": {
     "start": "nodemon index.js",
     "deploy-commands": "node scripts/deployCommands.js"
