@@ -12,11 +12,11 @@ module.exports = {
             if (!interaction.member.voice.channel) {
                 return interaction.editReply('You need to be in a Voice Channel.');
             }
-            
+
             const queue = useQueue(interaction.guild.id);
             if (!queue) return interaction.editReply('Bot is currently not playing.');
 
-            queue.node.stop(true);
+            queue.delete();
             interaction.editReply(`Stopped playback.`);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
