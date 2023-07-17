@@ -52,6 +52,7 @@ client.player = new Player(client, {
         highWaterMark: 1 << 25
     }
 })
+client.player.extractors.loadDefault();
 
 
 
