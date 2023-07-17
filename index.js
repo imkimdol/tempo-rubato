@@ -6,6 +6,7 @@ const path = require('node:path');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 client.commands = new Collection();
+client.timeout = parseInt(process.env.MESSAGE_TIMEOUT);
 
 
 
@@ -55,6 +56,11 @@ const player = new Player(client, {
     }
 })
 player.extractors.loadDefault();
+
+player.events.on('playerStart', async (queue, track) => {
+    const message = await queue.metadata.send(`Playing: ${track.title}`);
+    if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+});
 
 
 

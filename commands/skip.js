@@ -20,8 +20,7 @@ module.exports = {
             queue.node.skip();
 
             const message = await interaction.editReply(`Skipped \`${track.title}\`.`);
-            const timeout = parseInt(process.env.MESSAGE_TIMEOUT);
-            if (timeout > 0) setTimeout(() => message.delete(), timeout);
+            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

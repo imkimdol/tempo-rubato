@@ -21,12 +21,16 @@ module.exports = {
             const playResult = await player.play(
                 interaction.member.voice.channel,
                 search,
-                { requestedBy: interaction.user }
+                {
+                    requestedBy: interaction.user,
+                    nodeOptions: {
+                        metadata: interaction.channel
+                    }
+                },
             );
 
             const message = await interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${playResult.queue.size + 1}\``);
-            const timeout = parseInt(process.env.MESSAGE_TIMEOUT);
-            if (timeout > 0) setTimeout(() => message.delete(), timeout);
+            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);
