@@ -23,8 +23,10 @@ module.exports = {
 
             const queue = useQueue(interaction.guild.id);
             client.playRate = rate;
-            queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${rate}`]);
-            queue.filters.ffmpeg.setFilters([]);
+            if (queue) {      
+                queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${rate}`]);
+                queue.filters.ffmpeg.setFilters([]);
+            }
 
             const message = await interaction.editReply(`Set playback rate to ${rate}.`);
             if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
