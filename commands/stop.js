@@ -5,20 +5,21 @@ module.exports = {
         .setName('stop')
         .setDescription('Stop playback.'),
     async execute(interaction, client) {
+        await interaction.deferReply();
+
         try {
             if (!interaction.member.voice.channel) {
-                return interaction.reply('You need to be in a Voice Channel.');
+                return interaction.editReply('You need to be in a Voice Channel.');
             }
             if (!client.queue || !client.queue.currentTrack) {
-                return interaction.reply('Bot is currently not playing.');
+                return interaction.editReply('Bot is currently not playing.');
             }
-            const track = client.queue.currentTrack;
 
             await client.playerNode.stop(true);
             
-            interaction.reply(`Stopped playback.`);
+            interaction.editReply(`Stopped playback.`);
         } catch (err) {
-            interaction.reply('An error occured!');
+            interaction.editReply('An error occured!');
             console.error(err);
         }
     },

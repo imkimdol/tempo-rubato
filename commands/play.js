@@ -6,12 +6,14 @@ module.exports = {
         .setName('play')
         .setDescription('Play a song.')
         .addStringOption(option =>
-            option.setName('input').setDescription('Enter song to play.').setRequired(true)
+            option.setName('search').setDescription('Enter search query.').setRequired(true)
         ),
     async execute(interaction, client) {
+        await interaction.deferReply();
+
         try {
             if (!interaction.member.voice.channel) {
-                return interaction.reply('You need to be in a Voice Channel to play a song.');
+                return interaction.editReply('You need to be in a Voice Channel to play a song.');
             }
 
             const input = interaction.options.getString('input');
@@ -24,9 +26,9 @@ module.exports = {
             if (!client.queue) client.queue = playResult.queue;
             if (!client.playerNode) client.playerNode = new GuildQueuePlayerNode(client.queue);
         
-            interaction.reply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${client.queue.size + 1}\``);
+            interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${client.queue.size + 1}\``);
         } catch (err) {
-            interaction.reply('An error occured while trying to play song!');
+            interaction.editReply('An error occured while trying to play song!');
             console.error(err);
         }
     },
