@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const glob = require('glob');
 const path = require('node:path');
 
@@ -58,10 +58,24 @@ const player = new Player(client, {
 })
 player.extractors.loadDefault();
 
+const loopModes = ['none', 'Track Loop', 'Queue Loop', 'autoplay'];
 player.events.on('playerStart', async (queue, track) => {
-    const message = await queue.metadata.send(`Playing: ${track.title}`);
-    if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+    const embed = new EmbedBuilder();
+    const user = track.requestedBy;
+    const loop = (queue.repeatMode > 0) ? `${loopModes[queue.repeatMode]} | ` : ''; 
+    
+    embed.setTitle(track.title)
+        .setColor(0xADD8E6)
+        .setURL(track.url)
+        .setAuthor({ name: 'Now Playing', iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` })
+        .setDescription(track.author)
+        .setThumbnail(track.thumbnail)
+        .setFooter({ text: `${loop}${track.duration} | ${track.source}` });
+    
+    const message = await queue.metadata.send({ embeds: [embed] });
+    if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout * 2);
 });
+
 player.events.on('queueCreate', queue => {
     const playRate = client.playRate;
     if (playRate !== 1) {

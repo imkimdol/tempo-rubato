@@ -17,7 +17,7 @@ module.exports = {
             }
 
             const rate = interaction.options.getNumber('rate');
-            if (rate < 0.5 || rate > 1.5) {
+            if (rate < 0.5 || rate > 2.0) {
                 return interaction.editReply('Playback rate is too extreme.');
             }
 
@@ -28,7 +28,7 @@ module.exports = {
                 queue.filters.ffmpeg.setFilters([]);
             }
 
-            const message = await interaction.editReply(`Set playback rate to ${rate}.`);
+            const message = await interaction.editReply(`Set playback rate to \`${rate}x\`.`);
             if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useMainPlayer } = require("discord-player");
 
 module.exports = {
@@ -29,7 +29,14 @@ module.exports = {
                 },
             );
 
-            const message = await interaction.editReply(`Added \`${playResult.track.title}\` to queue!\nQueue length: \`${playResult.queue.size + 1}\``);
+            const embed = new EmbedBuilder();
+    
+            embed.setTitle('Added to Queue')
+                .setColor(0xDCD0FF)
+                .addFields({ name: playResult.track.title, value: playResult.track.author })
+                .setFooter({ text: `Queue Size: ${playResult.queue.size}` });
+
+            const message = await interaction.editReply({ embeds: [embed] });
             if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
