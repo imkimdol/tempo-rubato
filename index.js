@@ -57,6 +57,7 @@ client.db = db;
 // Audio player
 
 const { Player } = require("discord-player");
+const { getAverageColor } = require('fast-average-color-node');
 
 const player = new Player(client, {
     ytdlOptions: {
@@ -70,10 +71,11 @@ const loopModes = ['none', 'Track Loop', 'Queue Loop', 'autoplay'];
 player.events.on('playerStart', async (queue, track) => {
     const embed = new EmbedBuilder();
     const user = track.requestedBy;
-    const loop = (queue.repeatMode > 0) ? `${loopModes[queue.repeatMode]} | ` : ''; 
+    const loop = (queue.repeatMode > 0) ? `${loopModes[queue.repeatMode]} | ` : '';
+    const songColour = await getAverageColor(track.thumbnail);
     
     embed.setTitle(track.title)
-        .setColor(0xADD8E6)
+        .setColor(songColour.hex)
         .setURL(track.url)
         .setAuthor({ name: 'Now Playing', iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` })
         .setDescription(track.author)

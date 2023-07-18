@@ -27,16 +27,16 @@ module.exports = {
             const queue = useQueue(interaction.guild.id);
             if (!queue) return interaction.editReply('Bot is currently not playing.');
 
-
             const embed = new EmbedBuilder();
-            const loopModes = ['none', 'Track Loop', 'Queue Loop', 'autoplay'];
+            const loopModes = ['none', 'Track Loop', 'Queue Loop', 'Autoplay'];
             const tracks = queue.tracks.data;
             
             embed.setTitle(`Queue`)
-                .setColor(0xFFFFFF)
-                .setDescription(`Size: ${queue.size}`);
+                .setColor(0xDCD0FF)
+                .setDescription(`${queue.size} Track(s) | Total Length: ${queue.durationFormatted}`);
+                
             if (tracks.length > 0) embed.addFields(...addRow(tracks, 0));
-            if (queue.repeatMode > 0) embed.setFooter({ text: loopModes[queue.repeatMode] });
+            if (queue.repeatMode > 0) embed.setFooter({ text: `🔁 ${loopModes[queue.repeatMode]} Enabled` });
             
             const message = await interaction.editReply({ embeds: [embed] });
             if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);

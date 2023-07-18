@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useMainPlayer } = require("discord-player");
+const { getAverageColor } = require('fast-average-color-node');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -45,7 +46,7 @@ module.exports = {
                     return interaction.editReply(`Failed to retrieve data from bank ${bank+1}.`);
                 }
             } else {
-                interaction.options.getString('search');
+                search = interaction.options.getString('search');
             }
 
             const player = useMainPlayer();
@@ -61,9 +62,11 @@ module.exports = {
             );
 
             const embed = new EmbedBuilder();
+            const userImage = `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png`;
+            const userColour = await getAverageColor(userImage);
     
             embed.setTitle('Added to Queue')
-                .setColor(0xDCD0FF)
+                .setColor(userColour.hex)
                 .addFields({ name: playResult.track.title, value: playResult.track.author })
                 .setFooter({ text: `Queue Size: ${playResult.queue.size}` });
 
