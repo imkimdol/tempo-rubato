@@ -1,3 +1,6 @@
+# Level DB
+db/
+
 # Logs
 logs
 *.log

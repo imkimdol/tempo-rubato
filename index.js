@@ -46,6 +46,14 @@ for (const file of eventFiles) {
 
 
 
+// Level DB
+
+const { Level } = require('level');
+const db = new Level('db', { keyEncoding: 'json' });
+client.db = db;
+
+
+
 // Audio player
 
 const { Player } = require("discord-player");
@@ -83,6 +91,7 @@ player.events.on('queueCreate', queue => {
         queue.filters.ffmpeg.setFilters([]);
     }
 });
+
 
 
 // Log in
