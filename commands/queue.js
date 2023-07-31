@@ -1,6 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { editReply } = require('../helpers/message');
+
+
 const trackToInlineField = (track, index) => {
     return { name: `${index+1}. ${track.title}`, value: track.author, inline: true };
 };
@@ -34,8 +37,7 @@ module.exports = {
             if (tracks.length > 0) embed.addFields(...addRow(tracks, 0));
             if (queue.repeatMode > 0) embed.setFooter({ text: `🔁 ${loopModes[queue.repeatMode]} Enabled` });
             
-            const message = await interaction.editReply({ embeds: [embed] });
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            editReply({ embeds: [embed] }, interaction, client);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

@@ -78,8 +78,8 @@ module.exports = {
                 .addFields({ name: playResult.track.title, value: playResult.track.author })
                 .setFooter({ text: `Queue Size: ${playResult.queue.size}` });
 
-            const message = await interaction.editReply({ embeds: [embed] });
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            editReply({ embeds: [embed] }, interaction, client);
+
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useHistory } = require("discord-player");
 
+const { editReply } = require('../helpers/message');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('previous')
@@ -16,9 +18,8 @@ module.exports = {
             const history = useHistory(interaction.guild.id);
             if (!history) return interaction.editReply('There is no playback history.');
             await history.previous();
-
-            const message = await interaction.editReply(`Playing previous track!`);
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            
+            editReply(`Playing previous track!`, interaction, client);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

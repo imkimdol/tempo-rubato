@@ -1,6 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
+
+const { editReply } = require('../helpers/message');
  
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,8 +32,7 @@ module.exports = {
                 .setThumbnail(track.thumbnail)
                 .setFooter({ text: `${progressBar}\nRequested by ${user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` });
             
-            const message = await interaction.editReply({ embeds: [embed] });
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout*2);
+            editReply({ embeds: [embed] }, interaction, client, 2);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

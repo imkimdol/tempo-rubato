@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { editReply } = require('../helpers/message');
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('shuffle')
@@ -17,9 +20,8 @@ module.exports = {
             if (!queue) return interaction.editReply('Bot is currently not playing.');
 
             queue.tracks.shuffle();
-
-            const message = await interaction.editReply(`Shuffled queue.`);
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            
+            editReply(`Shuffled queue.`, interaction, client);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

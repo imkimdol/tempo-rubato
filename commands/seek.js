@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { editReply } = require('../helpers/message');
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('seek')
@@ -25,9 +28,8 @@ module.exports = {
             } else {
                 await queue.node.seek(location * 1000);
             }
-
-            const message = await interaction.editReply(`Set seek location to \`${location}\` seconds.`);
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            
+            editReply(`Set seek location to \`${location}\` seconds.`, interaction, client);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { editReply } = require('../helpers/message');
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('skip')
@@ -19,8 +22,7 @@ module.exports = {
             const track = queue.currentTrack;
             queue.node.skip();
 
-            const message = await interaction.editReply(`Skipped ${track.title}.`);
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            editReply(`Skipped ${track.title}.`, interaction, client);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);

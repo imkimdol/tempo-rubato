@@ -83,7 +83,15 @@ player.events.on('playerStart', async (queue, track) => {
         .setFooter({ text: `${loop}${track.duration} | ${track.source}` });
     
     const message = await queue.metadata.send({ embeds: [embed] });
-    if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout * 2);
+    if (client.timeout > 0) {
+        setTimeout(() => {
+            try {
+                message.delete();
+            } catch (err) {
+                // do nothing
+            }
+        }, client.timeout * 2);
+    }
 });
 
 player.events.on('queueCreate', queue => {

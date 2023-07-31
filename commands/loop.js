@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { editReply } = require('../helpers/message');
+
 const loopModes = ['off', 'track', 'queue', 'autoplay'];
 
 module.exports = {
@@ -31,8 +33,7 @@ module.exports = {
             const mode = interaction.options.getInteger('mode');
             queue.setRepeatMode(mode);
 
-            const message = await interaction.editReply(`Set loop mode to \`${loopModes[mode]}\`.`);
-            if (client.timeout > 0) setTimeout(() => message.delete(), client.timeout);
+            editReply(`Set loop mode to \`${loopModes[mode]}\`.`, interaction, client);
         } catch (err) {
             interaction.editReply(process.env.ERROR_MESSAGE);
             console.error(err);
