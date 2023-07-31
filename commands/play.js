@@ -48,19 +48,27 @@ module.exports = {
             } else {
                 search = interaction.options.getString('search');
             }
-
+            
             const player = useMainPlayer();
-            const playResult = await player.play(
-                interaction.member.voice.channel,
-                search,
-                {
-                    requestedBy: interaction.user,
-                    nodeOptions: {
-                        metadata: interaction.channel
-                    }
-                },
-            );
-
+            let playResult;
+            try {
+                playResult = await player.play(
+                    interaction.member.voice.channel,
+                    search,
+                    {
+                        requestedBy: interaction.user,
+                        nodeOptions: {
+                            metadata: interaction.channel
+                        }
+                    },
+                );
+            } catch (err) {
+                if (err.name === 'ERR_NO_RESULT') {
+                    return interaction.editReply(`Found no results!`);
+                }
+                throw err;
+            }
+            
             const embed = new EmbedBuilder();
             const userImage = `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png`;
             const userColour = await getAverageColor(userImage);
