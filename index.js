@@ -7,7 +7,7 @@ const path = require('node:path');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 client.commands = new Collection();
 client.timeout = parseInt(process.env.MESSAGE_TIMEOUT);
-client.playRate = 1.0;
+client.playRates = {};
 
 
 
@@ -95,9 +95,9 @@ player.events.on('playerStart', async (queue, track) => {
 });
 
 player.events.on('queueCreate', queue => {
-    const playRate = client.playRate;
+    const playRate = client.playRates[queue.guild.id];
     if (playRate !== 1) {
-        queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${client.playRate}`]);
+        queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
         queue.filters.ffmpeg.setFilters([]);
     }
 });

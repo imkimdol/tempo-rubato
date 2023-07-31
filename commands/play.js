@@ -37,7 +37,8 @@ module.exports = {
         try {
             if (!checkChannelType(interaction, client)) return;
             if (!checkInVoice(interaction, client)) return;
-
+            if (!client.playRates[interaction.guild.id]) client.playRates[interaction.guild.id] = 1;
+            
             let search;
             if (interaction.options.getSubcommand() === 'favourites') {
                 const bank = interaction.options.getInteger('bank');

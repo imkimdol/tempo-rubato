@@ -25,7 +25,7 @@ module.exports = {
             }
 
             const queue = useQueue(interaction.guild.id);
-            client.playRate = rate;
+            client.playRates[interaction.guild.id] = rate;
             if (queue) {      
                 queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${rate}`]);
                 queue.filters.ffmpeg.setFilters([]);
