@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
-const { checkInVoice } = require('../helpers/check');
+const { checkChannelType, checkInVoice } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 
@@ -16,6 +16,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            if (!checkChannelType(interaction, client)) return;
             if (!checkInVoice(interaction, client)) return;
 
             const rate = interaction.options.getNumber('rate');

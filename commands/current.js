@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { getAverageColor } = require('fast-average-color-node');
 
-const { checkPlaying } = require('../helpers/check');
+const { checkChannelType, checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
  
 module.exports = {
@@ -12,6 +12,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            if (!checkChannelType(interaction, client)) return;
             if (!checkPlaying(interaction, client)) return;
 
             const track = queue.currentTrack;

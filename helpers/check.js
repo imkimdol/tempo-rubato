@@ -1,5 +1,18 @@
+const { ChannelType } = require('discord.js');
+
 const { useQueue, useHistory } = require('discord-player');
 const { editReply } = require('./message');
+
+const checkChannelType = (interaction, client) => {
+    if ( interaction.channel.type === null ) {
+        editReply('This command is not supported in this channel.', interaction, client);
+        return false;
+    } else if ( interaction.channel.type !== ChannelType.GuildText ) {c
+        editReply('This command is not supported in this channel.', interaction, client);
+        return false;
+    }
+    return true;
+}
 
 const checkInVoice = (interaction, client) => {
     if (!interaction.member.voice.channel) {
@@ -27,4 +40,4 @@ const checkHistory = (interaction, client) => {
     return true;
 }
 
-module.exports = { checkInVoice, checkPlaying, checkHistory };
+module.exports = { checkChannelType, checkInVoice, checkPlaying, checkHistory };

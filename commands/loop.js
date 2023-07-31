@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-const { checkInVoice, checkPlaying } = require('../helpers/check');
+const { checkChannelType, checkInVoice, checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 const loopModes = ['off', 'track', 'queue', 'autoplay'];
@@ -23,6 +23,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            if (!checkChannelType(interaction, client)) return;
             if (!checkInVoice(interaction, client)) return;
             if (!checkPlaying(interaction, client)) return;
 

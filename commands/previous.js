@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useHistory } = require("discord-player");
 
-const { checkInVoice, checkPlaying, checkHistory } = require('../helpers/check');
+const { checkChannelType, checkInVoice, checkPlaying, checkHistory } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 module.exports = {
@@ -12,6 +12,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            if (!checkChannelType(interaction, client)) return;
             if (!checkInVoice(interaction, client)) return;
             if (!checkPlaying(interaction, client)) return;
             if (!checkHistory(interaction, client)) return;

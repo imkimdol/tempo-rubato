@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useMainPlayer } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
 
-const { checkInVoice } = require('../helpers/check');
+const { checkChannelType, checkInVoice } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 module.exports = {
@@ -35,6 +35,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            if (!checkChannelType(interaction, client)) return;
             if (!checkInVoice(interaction, client)) return;
 
             let search;
