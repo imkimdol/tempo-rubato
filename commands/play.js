@@ -43,7 +43,7 @@ module.exports = {
                     search = await client.db.get([interaction.user.id, bank]);
                 } catch (err) {
                     console.error(err);
-                    return interaction.editReply(`Failed to retrieve data from bank ${bank+1}.`);
+                    return interaction.editReply(`Failed to retrieve data from bank ${bank}.`);
                 }
             } else {
                 search = interaction.options.getString('search');
