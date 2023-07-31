@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useHistory } = require("discord-player");
 
+const { checkInVoice, checkPlaying, checkHistory } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 module.exports = {
@@ -11,12 +12,11 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            if (!interaction.member.voice.channel) {
-                return interaction.editReply('You need to be in a Voice Channel.');
-            }
+            if (!checkInVoice(interaction, client)) return;
+            if (!checkPlaying(interaction, client)) return;
+            if (!checkHistory(interaction, client)) return;
 
             const history = useHistory(interaction.guild.id);
-            if (!history) return interaction.editReply('There is no playback history.');
             await history.previous();
 
             editReply(`Playing previous track!`, interaction, client);

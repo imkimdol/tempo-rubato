@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { useQueue } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
 
+const { checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
  
 module.exports = {
@@ -11,9 +11,8 @@ module.exports = {
     async execute(interaction, client) {
         await interaction.deferReply();
 
-        try {            
-            const queue = useQueue(interaction.guild.id);
-            if (!queue) return interaction.editReply('Bot is currently not playing.');
+        try {
+            if (!checkPlaying(interaction, client)) return;
 
             const track = queue.currentTrack;
             const user = interaction.user;

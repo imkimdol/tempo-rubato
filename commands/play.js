@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useMainPlayer } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
 
+const { checkInVoice } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 module.exports = {
@@ -34,9 +35,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            if (!interaction.member.voice.channel) {
-                return interaction.editReply('You need to be in a Voice Channel to play a song.');
-            }
+            if (!checkInVoice(interaction, client)) return;
 
             let search;
             if (interaction.options.getSubcommand() === 'favourites') {

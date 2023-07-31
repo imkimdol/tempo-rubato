@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 
@@ -23,9 +24,9 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            const queue = useQueue(interaction.guild.id);
-            if (!queue) return interaction.editReply('Bot is currently not playing.');
+            if (!checkPlaying(interaction, client)) return;
 
+            const queue = useQueue(interaction.guild.id);
             const embed = new EmbedBuilder();
             const loopModes = ['none', 'Track Loop', 'Queue Loop', 'Autoplay'];
             const tracks = queue.tracks.data;
@@ -38,6 +39,7 @@ module.exports = {
             if (queue.repeatMode > 0) embed.setFooter({ text: `🔁 ${loopModes[queue.repeatMode]} Enabled` });
             
             editReply({ embeds: [embed] }, interaction, client);
+            
         } catch (err) {
             handleError(err, interaction, client);
         }

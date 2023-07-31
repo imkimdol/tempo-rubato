@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { checkInVoice, checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 
@@ -12,13 +13,10 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            if (!interaction.member.voice.channel) {
-                return interaction.editReply('You need to be in a Voice Channel.');
-            }
+            if (!checkInVoice(interaction, client)) return;
+            if (!checkPlaying(interaction, client)) return;
 
             const queue = useQueue(interaction.guild.id);
-            if (!queue) return interaction.editReply('Bot is currently not playing.');
-
             queue.tracks.shuffle();
             
             editReply(`Shuffled queue.`, interaction, client);

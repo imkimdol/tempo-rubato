@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
+const { checkInVoice } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
 
 
@@ -15,9 +16,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            if (!interaction.member.voice.channel) {
-                return interaction.editReply('You need to be in a Voice Channel.');
-            }
+            if (!checkInVoice(interaction, client)) return;
 
             const rate = interaction.options.getNumber('rate');
             if (rate < 0.5 || rate > 2.0) {
