@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { getAverageColor } = require('fast-average-color-node');
+const { useQueue } = require('discord-player');
 
 const { checkChannelType, checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
@@ -14,7 +15,8 @@ module.exports = {
         try {
             if (!checkChannelType(interaction, client)) return;
             if (!checkPlaying(interaction, client)) return;
-
+            
+            const queue = useQueue(interaction.guild.id);
             const track = queue.currentTrack;
             const user = interaction.user;
             const songColour = await getAverageColor(track.thumbnail);

@@ -1,6 +1,6 @@
 const { ChannelType } = require('discord.js');
-
 const { useQueue, useHistory } = require('discord-player');
+
 const { editReply } = require('./message');
 
 const checkChannelType = (interaction, client) => {
