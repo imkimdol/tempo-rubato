@@ -13,7 +13,7 @@ module.exports = {
 
         try {
             if (!interaction.member.voice.channel) {
-                return interaction.editReply('You need to be in a Voice Channel to play a song.');
+                return interaction.editReply('You need to be in a Voice Channel.');
             }
 
             const queue = useQueue(interaction.guild.id);

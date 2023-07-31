@@ -20,10 +20,6 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            if (!interaction.member.voice.channel) {
-                return interaction.editReply('You need to be in a Voice Channel.');
-            }
-
             const queue = useQueue(interaction.guild.id);
             if (!queue) return interaction.editReply('Bot is currently not playing.');
 
