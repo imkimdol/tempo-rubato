@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 
+const { handleError } = require('../helpers/message');
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('register')
@@ -28,8 +31,7 @@ module.exports = {
             await client.db.put([interaction.user.id, bank], query);
             interaction.editReply('Successfully added search query.');
         } catch (err) {
-            interaction.editReply(process.env.ERROR_MESSAGE);
-            console.error(err);
+            handleError(err, interaction, client);
         }
     },
 };

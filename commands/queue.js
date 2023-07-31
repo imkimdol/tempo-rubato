@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
-const { editReply } = require('../helpers/message');
+const { editReply, handleError } = require('../helpers/message');
 
 
 const trackToInlineField = (track, index) => {
@@ -39,8 +39,7 @@ module.exports = {
             
             editReply({ embeds: [embed] }, interaction, client);
         } catch (err) {
-            interaction.editReply(process.env.ERROR_MESSAGE);
-            console.error(err);
+            handleError(err, interaction, client);
         }
     },
 };

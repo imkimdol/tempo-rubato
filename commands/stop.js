@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
-const { editReply } = require('../helpers/message');
+const { editReply, handleError } = require('../helpers/message');
 
 
 module.exports = {
@@ -22,9 +22,9 @@ module.exports = {
             queue.delete();
             
             editReply(`Stopped playback.`, interaction, client);
+            
         } catch (err) {
-            interaction.editReply(process.env.ERROR_MESSAGE);
-            console.error(err);
+            handleError(err, interaction, client);
         }
     },
 };

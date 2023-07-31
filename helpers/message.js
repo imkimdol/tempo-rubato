@@ -14,4 +14,10 @@ const editReply = async (content, interaction, client, timeoutMultiplier) => {
     }
 };
 
-module.exports = {editReply};
+const handleError = (err, interaction, client) => {
+    console.error(err);
+    client.users.send(interaction.user.id, '```javascript\n' + err.stack + '```');
+    interaction.editReply(process.env.ERROR_MESSAGE);
+};
+
+module.exports = { editReply, handleError};

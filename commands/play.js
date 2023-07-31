@@ -2,6 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useMainPlayer } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
 
+const { editReply, handleError } = require('../helpers/message');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -81,8 +83,7 @@ module.exports = {
             editReply({ embeds: [embed] }, interaction, client);
 
         } catch (err) {
-            interaction.editReply(process.env.ERROR_MESSAGE);
-            console.error(err);
+            handleError(err, interaction, client)
         }
     },
 };

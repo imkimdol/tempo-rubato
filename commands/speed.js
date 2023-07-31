@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
-const { editReply } = require('../helpers/message');
+const { editReply, handleError } = require('../helpers/message');
 
 
 module.exports = {
@@ -30,12 +30,11 @@ module.exports = {
                 queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${rate}`]);
                 queue.filters.ffmpeg.setFilters([]);
             }
-            
+
             editReply(`Set playback rate to \`${rate}x\`.`, interaction, client);
 
         } catch (err) {
-            interaction.editReply(process.env.ERROR_MESSAGE);
-            console.error(err);
+            handleError(err, interaction, client);
         }
     },
 };

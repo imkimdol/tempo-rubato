@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 
+const { handleError } = require('../helpers/message');
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('echo')
@@ -19,10 +22,9 @@ module.exports = {
             } else {
                 interaction.editReply('You do not have permission.');
             }
-            
+
         } catch (err) {
-            interaction.editReply(process.env.ERROR_MESSAGE);
-            console.error(err);
+            handleError(err, interaction, client);
         }
     },
 };
