@@ -24,6 +24,7 @@ module.exports = {
                 queue: false,
                 separator: ' '
             });
+            const footerText = `${progressBar}\nRequested by ${user.username} | ${client.playRates[interaction.guild.id]}x`;
             
             const embed = new EmbedBuilder();
             embed.setTitle(track.title)
@@ -32,7 +33,7 @@ module.exports = {
                 .setAuthor({ name: 'Currently Playing' })
                 .setDescription(track.author)
                 .setThumbnail(track.thumbnail)
-                .setFooter({ text: `${progressBar}\nRequested by ${user.username}`, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` });
+                .setFooter({ text: footerText, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` });
             
             editReply({ embeds: [embed] }, interaction, client, 2);
         } catch (err) {
