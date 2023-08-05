@@ -16,7 +16,7 @@ const editReply = async (content, interaction, client, timeoutMultiplier) => {
 
 const handleError = (err, interaction, client) => {
     console.error(err);
-    client.users.send(interaction.user.id, '```javascript\n' + err.stack + '```');
+    client.users.send(process.env.OWNER_ID, '```javascript\n' + err.stack + '```');
     interaction.editReply(process.env.ERROR_MESSAGE);
 };
 

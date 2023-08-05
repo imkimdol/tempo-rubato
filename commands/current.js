@@ -19,7 +19,6 @@ module.exports = {
             const queue = useQueue(interaction.guild.id);
             const track = queue.currentTrack;
             const user = interaction.user;
-            const songColour = await getAverageColor(track.thumbnail);
             const progressBar = queue.node.createProgressBar({
                 queue: false,
                 separator: ' '
@@ -28,13 +27,18 @@ module.exports = {
             
             const embed = new EmbedBuilder();
             embed.setTitle(track.title)
-                .setColor(songColour.hex)
                 .setURL(track.url)
                 .setAuthor({ name: 'Currently Playing' })
                 .setDescription(track.author)
-                .setThumbnail(track.thumbnail)
                 .setFooter({ text: footerText, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` });
             
+            try {
+                const songColour = await getAverageColor(track.thumbnail);
+                embed.setColor(songColour.hex).setThumbnail(track.thumbnail);
+            } catch {
+                embed.setColor(0xDCD0FF);
+            }
+
             editReply({ embeds: [embed] }, interaction, client, 2);
         } catch (err) {
             handleError(err, interaction, client)
