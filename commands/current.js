@@ -23,7 +23,7 @@ module.exports = {
                 queue: false,
                 separator: ' '
             });
-            const footerText = `${progressBar}\nRequested by ${user.username} | ${client.playRates[interaction.guild.id]}x`;
+            const footerText = `${progressBar}\nRequested by ${user.username} | ${client.playRates[interaction.guild.id]}x | ${track.source}`;
             
             const embed = new EmbedBuilder();
             embed.setTitle(track.title)
@@ -43,5 +43,5 @@ module.exports = {
         } catch (err) {
             handleError(err, interaction, client)
         }
-    },
+    }
 };
