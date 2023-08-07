@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { useQueue } = require('discord-player');
 
 const { checkChannelType, checkInVoice, checkPlaying } = require('../helpers/check');
 const { editReply, handleError } = require('../helpers/message');
@@ -28,6 +29,7 @@ module.exports = {
             if (!checkPlaying(interaction, client)) return;
 
             const mode = interaction.options.getInteger('mode');
+            const queue = useQueue(interaction.guild.id);
             queue.setRepeatMode(mode);
 
             editReply(`Set loop mode to \`${loopModes[mode]}\`.`, interaction, client);
