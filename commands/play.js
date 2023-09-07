@@ -46,7 +46,7 @@ module.exports = {
                     search = await client.db.get([interaction.user.id, bank]);
                 } catch (err) {
                     console.error(err);
-                    return interaction.editReply(`Failed to retrieve data from bank ${bank}.`);
+                    return editReply(`Failed to retrieve data from bank ${bank}.`, interaction, client);
                 }
             } else {
                 search = interaction.options.getString('search');
@@ -66,12 +66,13 @@ module.exports = {
                     },
                 );
             } catch (err) {
+                console.error(err);
                 if (err.name === 'ERR_NO_RESULT') {
-                    return interaction.editReply(`Found no results!`);
+                    return editReply(`Found no results!`, interaction, client);
                 }
                 throw err;
             }
-            
+                        
             const embed = new EmbedBuilder();
             const userImage = `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png`;
             const userColour = await getAverageColor(userImage);
@@ -84,7 +85,7 @@ module.exports = {
             editReply({ embeds: [embed] }, interaction, client);
 
         } catch (err) {
-            handleError(err, interaction, client)
+            handleError(err, interaction, client);
         }
     },
 };
