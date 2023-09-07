@@ -1,3 +1,5 @@
+const args = process.argv.slice(2);
+
 require('dotenv').config();
 
 const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
@@ -67,6 +69,32 @@ const player = new Player(client, {
 })
 player.extractors.loadDefault();
 
+if (args[0] === 'v' || args[0] === 'verbose') {
+    player.on('debug', async (message) => {
+        // Emitted when the player sends debug info
+        // Useful for seeing what dependencies, extractors, etc are loaded
+        console.log(`General player debug event: ${message}`);
+    });
+    
+    player.events.on('debug', async (queue, message) => {
+        // Emitted when the player queue sends debug info
+        // Useful for seeing what state the current queue is at
+        console.log(`Player debug event: ${message}`);
+    });
+    
+    player.events.on('error', (queue, error) => {
+        // Emitted when the player queue encounters error
+        console.log(`General player error event: ${error.message}`);
+        console.log(error);
+    });
+    
+    player.events.on('playerError', (queue, error) => {
+        // Emitted when the audio player errors while streaming audio track
+        console.log(`Player error event: ${error.message}`);
+        console.log(error);
+    });
+}
+
 const loopModes = ['none', 'Track Loop', 'Queue Loop', 'autoplay'];
 player.events.on('playerStart', async (queue, track) => {
     try {
@@ -86,7 +114,7 @@ player.events.on('playerStart', async (queue, track) => {
         } catch {
             embed.setColor(0xDCD0FF);
         }
-        
+
         const message = await queue.metadata.send({ embeds: [embed] });
         if (client.timeout > 0) {
             setTimeout(() => {
@@ -105,10 +133,10 @@ player.events.on('playerStart', async (queue, track) => {
 
 player.events.on('queueCreate', queue => {
     const playRate = client.playRates[queue.guild.id];
-    if (playRate !== 1) {
-        queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
-        queue.filters.ffmpeg.setFilters([]);
-    }
+    // if (playRate !== 1) {
+    //     queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
+    //     queue.filters.ffmpeg.setFilters([]);
+    // }
 });
 
 
