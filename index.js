@@ -67,7 +67,6 @@ const player = new Player(client, {
         highWaterMark: 1 << 25
     }
 })
-player.extractors.loadDefault();
 
 if (args[0] === 'v' || args[0] === 'verbose') {
     player.on('debug', async (message) => {
@@ -94,6 +93,12 @@ if (args[0] === 'v' || args[0] === 'verbose') {
         console.log(error);
     });
 }
+
+const awaitExtractors = async () => {
+    await player.extractors.loadDefault();
+    console.log(player.scanDeps());
+};
+awaitExtractors();
 
 const loopModes = ['none', 'Track Loop', 'Queue Loop', 'autoplay'];
 player.events.on('playerStart', async (queue, track) => {
@@ -133,10 +138,10 @@ player.events.on('playerStart', async (queue, track) => {
 
 player.events.on('queueCreate', queue => {
     const playRate = client.playRates[queue.guild.id];
-    // if (playRate !== 1) {
-    //     queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
-    //     queue.filters.ffmpeg.setFilters([]);
-    // }
+    if (playRate !== 1) {
+        queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
+        queue.filters.ffmpeg.setFilters([]);
+    }
 });
 
 
