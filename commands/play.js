@@ -77,7 +77,7 @@ module.exports = {
             const userImage = `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png`;
             const userColour = await getAverageColor(userImage);
     
-            embed.setTitle('Added `to Queue')
+            embed.setTitle('Added to Queue')
                 .setColor(userColour.hex)
                 .addFields({ name: playResult.track.title, value: playResult.track.author })
                 .setFooter({ text: `Queue Size: ${playResult.queue.size}` });
