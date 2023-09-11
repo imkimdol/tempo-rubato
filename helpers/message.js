@@ -8,7 +8,7 @@ const editReply = async (content, interaction, client, timeoutMultiplier) => {
             try {
                 message.delete();
             } catch (err) {
-                // do nothing
+                client.users.send(process.env.OWNER_ID, 'Error deleting message.\n' + err.stack );
             }
         }, client.timeout * timeoutMultiplier);
     }
@@ -20,4 +20,16 @@ const handleError = (err, interaction, client) => {
     interaction.editReply(process.env.ERROR_MESSAGE);
 };
 
-module.exports = { editReply, handleError};
+const trackToInlineField = (track, index, numbered) => {
+    const num = numbered ? (index+1) + '. ' : ''
+    return { name: `${num}${track.title}`, value: track.author, inline: true };
+};
+const addRows = (tracks, maxLength, numbered) => {
+    const items = [];
+    for (i=0; i<0+maxLength; ++i) {
+        if (tracks[i]) items.push(trackToInlineField(tracks[i], i, numbered));
+    }
+    return items;
+}
+
+module.exports = { editReply, handleError, addRows };

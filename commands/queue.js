@@ -2,19 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useQueue } = require("discord-player");
 
 const { checkChannelType, checkPlaying } = require('../helpers/check');
-const { editReply, handleError } = require('../helpers/message');
+const { editReply, handleError, addRows } = require('../helpers/message');
 
-
-const trackToInlineField = (track, index) => {
-    return { name: `${index+1}. ${track.title}`, value: track.author, inline: true };
-};
-const addRow = (tracks, start) => {
-    const items = [];
-    for (i=start; i<start+9; ++i) {
-        if (tracks[i]) items.push(trackToInlineField(tracks[i], i));
-    }
-    return items;
-}
  
 module.exports = {
     data: new SlashCommandBuilder()
@@ -36,9 +25,9 @@ module.exports = {
                 .setColor(0xDCD0FF)
                 .setDescription(`${queue.size} Track(s) | Total Length: ${queue.durationFormatted}`);
                 
-            if (tracks.length > 0) embed.addFields(...addRow(tracks, 0));
+            if (tracks.length > 0) embed.addFields(...addRows(tracks, 12, true));
             if (queue.repeatMode > 0) embed.setFooter({ text: `🔁 ${loopModes[queue.repeatMode]} Enabled` });
-            
+
             editReply({ embeds: [embed] }, interaction, client);
 
         } catch (err) {
