@@ -111,7 +111,7 @@ player.events.on('playerStart', async (queue, track) => {
             .setURL(track.url)
             .setAuthor({ name: '▶️ Now Playing', iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256` })
             .setDescription(track.author)
-            .setFooter({ text: `${loop}${track.duration} | ${track.source}` });
+            .setFooter({ text: `${loop}${track.duration} | ${queue.size} song(s) remaining | ${track.source}` });
 
         try {
             const songColour = await getAverageColor(track.thumbnail);
