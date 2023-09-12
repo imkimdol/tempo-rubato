@@ -65,8 +65,12 @@ module.exports = {
                         search,
                         {
                             requestedBy: interaction.user,
+                            connectionOptions: {
+                                deaf: false,
+                            },
                             nodeOptions: {
                                 metadata: interaction.channel,
+                                bufferingTimeout: 10000,
                                 skipOnNoStream: false
                             }
                         },
