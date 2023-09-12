@@ -18,7 +18,13 @@ module.exports = {
             if (!checkHistory(interaction, client)) return;
 
             const history = useHistory(interaction.guild.id);
-            await history.previous();
+            
+            try {
+                await history.previous();
+            } catch (err) {
+                if (err.name === 'ERR_NO_RESULT') return editReply('There is no history.', interaction, client)
+                throw err;
+            }
 
             editReply(`Playing previous track!`, interaction, client);
         } catch (err) {

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { useMainPlayer } = require("discord-player");
+const { useMainPlayer, useQueue } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
 
 const { checkChannelType, checkInVoice } = require('../helpers/check');
@@ -87,10 +87,11 @@ module.exports = {
             const embed = new EmbedBuilder();
             const userImage = `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png`;
             const userColour = await getAverageColor(userImage);
+            const queue = useQueue(interaction.guild.id);
 
             embed.setTitle('Added to Queue')
                 .setColor(userColour.hex)
-                .setFooter({ text: `Queue Size: ${playResults[0].queue.size}` });
+                .setFooter({ text: `Queue Size: ${queue.size}` });
             
             if (playResults.length === 1) {
                 result = playResults[0];

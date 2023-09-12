@@ -17,7 +17,7 @@ const editReply = async (content, interaction, client, timeoutMultiplier) => {
 const handleError = (err, interaction, client) => {
     console.error(err);
     client.users.send(process.env.OWNER_ID, '```javascript\n' + err.stack + '```');
-    interaction.editReply(process.env.ERROR_MESSAGE);
+    editReply(process.env.ERROR_MESSAGE, interaction, client);
 };
 
 const trackToInlineField = (track, index, numbered) => {
