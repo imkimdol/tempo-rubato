@@ -22,7 +22,7 @@ const handleError = (err, interaction, client) => {
 
 const trackToInlineField = (track, index, numbered) => {
     const num = numbered ? (index+1) + '. ' : ''
-    return { name: `${num}${track.title}`, value: track.author, inline: true };
+    return { name: `${num}${track.title}`, value: `[${track.author}](${track.url})`, inline: true };
 };
 const addRows = (tracks, maxLength, numbered) => {
     const items = [];
