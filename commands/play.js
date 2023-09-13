@@ -2,11 +2,73 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { useMainPlayer, useQueue } = require("discord-player");
 const { getAverageColor } = require('fast-average-color-node');
 
-const { checkChannelType, checkInVoice } = require('../helpers/check');
+const { checkChannelType, checkInVoice, } = require('../helpers/check');
 const { editReply, handleError, addRows } = require('../helpers/message');
 
 
-const checkNoResult = (result) => typeof result === 'string' && result.equals('ERR_NO_RESULT');
+const checkNoResult = (result) => typeof result === 'string' && result === 'ERR_NO_RESULT';
+
+const runPlay = async (input, interaction) => {
+    searches = input.split(/,\s*/);
+    const player = useMainPlayer();
+
+    const playResults = [];
+    for (let search of searches) {
+        try {
+            const playResult = await player.play(
+                interaction.member.voice.channel,
+                search,
+                {
+                    requestedBy: interaction.user,
+                    connectionOptions: {
+                        deaf: false,
+                    },
+                    nodeOptions: {
+                        metadata: interaction.channel,
+                        bufferingTimeout: 10000,
+                        skipOnNoStream: false
+                    }
+                },
+            );
+            playResults.push(playResult);
+
+        } catch (err) {
+            console.error(err);
+
+            if (err.name === 'ERR_NO_RESULT') {
+                playResults.push('ERR_NO_RESULT');
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    return playResults;
+};
+
+const runSearch = async (input, interaction) => {
+    const queue = useQueue(interaction.guild.id);
+    if (!queue) return runPlay(input);
+
+    const player = useMainPlayer();
+    try {
+        const searchResult = await player.search(input, { requestedBy: interaction.user });
+        console.log(searchResult);
+
+        queue.insertTrack(searchResult.tracks[0], 0);
+        return searchResult.tracks[0];
+
+    } catch (err) {
+        console.error(err);
+
+        if (err.name === 'ERR_NO_RESULT' || err.name === 'ERR_INVALID_ARG_TYPE') {
+            return 'ERR_NO_RESULT';
+        } else {
+            throw err;
+        }
+    }
+}
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,6 +78,13 @@ module.exports = {
             subcommand
                 .setName('search')
                 .setDescription('Play using a search query. Separate by commas for multi-query.')
+                .addStringOption(option =>
+                    option.setName('query').setDescription('Enter search query.').setRequired(true)
+                ))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('next')
+                .setDescription('Play next in queue using a search query. Limited to one song.')
                 .addStringOption(option =>
                     option.setName('query').setDescription('Enter search query.').setRequired(true)
                 ))
@@ -54,63 +123,52 @@ module.exports = {
             } else {
                 input = interaction.options.getString('query');
             }
+
             
-            searches = input.split(/,\s*/);
-            const player = useMainPlayer();
-            const playResults = [];
-            for (let search of searches) {
-                try {
-                    const playResult = await player.play(
-                        interaction.member.voice.channel,
-                        search,
-                        {
-                            requestedBy: interaction.user,
-                            connectionOptions: {
-                                deaf: false,
-                            },
-                            nodeOptions: {
-                                metadata: interaction.channel,
-                                bufferingTimeout: 10000,
-                                skipOnNoStream: false
-                            }
-                        },
-                    );
-                    playResults.push(playResult);
-
-                } catch (err) {
-                    console.error(err);
-
-                    if (err.name === 'ERR_NO_RESULT') {
-                        playResults.push('ERR_NO_RESULT');
-                    } else {
-                        throw err;
-                    }
-                }
-            }    
+            let results;
+            if (interaction.options.getSubcommand() === 'next') {
+                results = await runSearch(input, interaction);
+            } else {
+                results = await runPlay(input, interaction);
+            }
 
             const embed = new EmbedBuilder();
             const userImage = `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.png`;
             const userColour = await getAverageColor(userImage);
             const queue = useQueue(interaction.guild.id);
 
-            embed.setTitle('Added to Queue')
-                .setColor(userColour.hex)
-                .setFooter({ text: `Queue Size: ${queue.size}` });
             
-            if (playResults.length === 1) {
-                result = playResults[0];
+            
+            if (interaction.options.getSubcommand() === 'next') {
+                const result = results;
                 if (checkNoResult(result)) return editReply(`Found no results!`, interaction, client);
-                embed.addFields({ name: result.track.title, value: result.track.author });
-            } else if (playResults.length > 1) {
-                let tracks = [];
-                playResults.map((r) => {
-                    if (!checkNoResult(r)) tracks = tracks.concat(r.track);
-                });
-                embed.addFields(...addRows(tracks, 12));
-            } else {
-                return editReply(`Failed to add songs.`, interaction, client);
-            }
 
+                embed.setTitle('Added to Front of Queue')
+                    .setColor(userColour.hex)
+                    .setFooter({ text: `Queue Size: ${queue.size}` })
+                    .addFields({ name: result.title, value: result.author });
+
+            } else {
+                embed.setTitle('Added to Queue')
+                    .setColor(userColour.hex)
+
+                if (results.length === 1) {
+                    const result = results[0];
+                    if (checkNoResult(result)) return editReply(`Found no results!`, interaction, client);
+                    embed.addFields({ name: result.track.title, value: result.track.author });
+                } else if (results.length > 1) {
+                    let tracks = [];
+                    results.map((r) => {
+                        if (!checkNoResult(r)) tracks = tracks.concat(r.track);
+                    });
+                    embed.addFields(...addRows(tracks, 12));
+                } else {
+                    return editReply(`Failed to add songs.`, interaction, client);
+                }
+
+                embed.setFooter({ text: `Queue Size: ${queue.size}` });
+            }
+            
             editReply({ embeds: [embed] }, interaction, client);
 
         } catch (err) {
