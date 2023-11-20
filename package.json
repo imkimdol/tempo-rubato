@@ -14,6 +14,7 @@
     "glob": "^10.3.2",
     "level": "^8.0.0",
     "mediaplex": "^0.0.6",
+    "node-cron": "^3.0.3",
     "youtube-ext": "^1.1.14",
     "youtube-sr": "^4.3.4"
   },
