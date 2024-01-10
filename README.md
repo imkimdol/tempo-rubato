@@ -2,8 +2,6 @@
 
 A Discord bot for playing music with user-defined speeds. Built with [Discord Player](https://discord-player.js.org/).
 
-## Features
-
 ## Installation
 1. Clone the repository.
 2. Create a Discord application from the [Discord Developer Portal](https://discord.com/developers).
