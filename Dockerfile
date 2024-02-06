@@ -8,6 +8,7 @@ COPY .env ./
 COPY ./src ./src
 
 RUN apt-get update
+RUN apt install -y ffmpeg
 
 RUN yarn global add pm2
 RUN yarn install
