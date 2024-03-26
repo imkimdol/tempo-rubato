@@ -9,6 +9,7 @@ RUN yarn global add pm2
 COPY package.json ./
 COPY yarn.lock ./
 RUN yarn install
+RUN yarn add sharp --ignore-engines
 
 COPY .env ./
 COPY ./src ./src
