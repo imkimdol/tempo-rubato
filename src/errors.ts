@@ -1,3 +1,12 @@
+export class PlayerNotInitializedError extends Error {
+    constructor() {
+        const message = 'Player is not initialized. Please call initializePlayer before proceeding.';
+        super(message);
+        this.name = "PlayerNotInitializedError";
+        Object.setPrototypeOf(this, PlayerNotInitializedError.prototype);
+    }
+} 
+
 export class UnsupportedChannelTypeError extends Error {
     constructor() {
         const message = 'This command is not supported in this channel.';
