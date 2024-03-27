@@ -1,4 +1,5 @@
 import { GuildQueue, GuildQueueHistory, Player, QueueRepeatMode, Track } from "discord-player";
+import CommandsClient from "../bot/CommandsClient";
 
 export class PlayerController {
     private static playerInstance: Player;
@@ -6,8 +7,8 @@ export class PlayerController {
     constructor(guildId: string) {
 
     };
-    static initializePlayer() {
-
+    static initializePlayer(client: CommandsClient) {
+        
     }
 
     // Info

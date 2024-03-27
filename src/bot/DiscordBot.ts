@@ -15,6 +15,10 @@ export default class DiscordBot {
         this.loadEvents();
         this.logIn();
     }
+
+    getClient(): CommandsClient {
+        return this.client;
+    }
     
     private loadCommands = () => {
         const commandsPath = path.join(__dirname, '/commands');
