@@ -1,23 +1,40 @@
-import { GuildQueue, GuildQueueHistory, Player, PlayerInitOptions, QueueRepeatMode, Track } from "discord-player";
+import { GuildQueue, GuildQueueHistory, GuildQueuePlayerNode, Player, PlayerInitOptions, PlayerNodeInitializationResult, PlayerNodeInitializerOptions, QueueRepeatMode, Track, useHistory, useQueue } from "discord-player";
 import CommandsClient from "../bot/CommandsClient";
-import { PlayerNotInitializedError } from "../errors";
+import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RemovalAmountOutOfRangeError } from "../errors";
 import { playerStart } from "../bot/events/playerStart";
+import { CommandInteraction, GuildMember, GuildVoiceChannelResolvable } from "discord.js";
 
 export class PlayerController {
-    private static readonly playerInitOptions: PlayerInitOptions = {
+    private static readonly playerOptions: PlayerInitOptions = {
         ytdlOptions: {
             quality: "highestaudio",
             highWaterMark: 1 << 25
         }
     };
+    private static getNodeOptions(interaction: CommandInteraction): PlayerNodeInitializerOptions<any> {
+        return {
+            requestedBy: interaction.user,
+            connectionOptions: {
+                deaf: false,
+            },
+            nodeOptions: {
+                metadata: interaction.channel,
+                bufferingTimeout: 10000,
+                skipOnNoStream: false
+            }
+        }
+    }
+
     private static player: Player;
+    private guildId: string;
 
     constructor(guildId: string) {
         PlayerController.checkPlayerInitialized();
+        this.guildId = guildId;
     };
 
     static async initializePlayer(client: CommandsClient, verbose: boolean = false) {
-        this.player = new Player(client, this.playerInitOptions);
+        this.player = new Player(client, this.playerOptions);
         await this.player.extractors.loadDefault();
         this.attachEventListeners();
         if (verbose) this.attachDebugListeners();
@@ -69,54 +86,104 @@ export class PlayerController {
     }
 
     // Info
-    getCurrentTrack(): Track<unknown> {
-        throw new Error('Not Implemented.');
-    };
     getQueue(): GuildQueue<unknown> {
-        throw new Error('Not Implemented.');
+        const queue = useQueue(this.guildId);
+        if (!queue) throw new NoQueueError();
+        return queue;
+    };
+    private getPlayerNode(): GuildQueuePlayerNode<unknown> {
+        return this.getQueue().node;
+    }
+    getTracks() {
+        return this.getQueue().tracks;
+    };
+    getCurrentTrack(): Track<unknown> {
+        return this.getQueue().currentTrack;
     };
     getHistory(): GuildQueueHistory<unknown> {
-        throw new Error('Not Implemented.');
+        const history = useHistory(this.guildId);
+        if (!history) throw new NoHistoryError();
+        return history;
     };
 
     // Queue Management
-    playSearch(query: string[]): Track<unknown>[] {
-        throw new Error('Not Implemented.');
+    private async play(query: string, channel: GuildVoiceChannelResolvable, options: PlayerNodeInitializerOptions<any>): Promise<PlayerNodeInitializationResult<any> | null>{
+        try {
+            return await PlayerController.player.play(channel, query, options);
+        } catch (err) {
+            if (err.name === 'ERR_NO_RESULT') return null;
+            throw err;
+        }
     };
+    async playSearch(queries: string[], interaction: CommandInteraction): Promise<PlayerNodeInitializationResult<any>[]> {
+        const results = []
 
-    playNext(query: string): Track<unknown> {
+        const member = interaction.member as GuildMember;
+        const channel = member.voice.channel;
+        const options = PlayerController.getNodeOptions(interaction);
+
+        for (const query of queries) {
+            const result = await this.play(query, channel, options);
+            if (result) results.push(result);
+        };
+
+        return results;
+    };
+    playNext(query: string, interaction: CommandInteraction): Track<unknown> {
         throw new Error('Not Implemented.');
     };
-    removeLast(): Track<unknown> {
-        throw new Error('Not Implemented.');
+    removeLast(amount: number) {
+        if (!Number.isInteger(amount)) throw new IsNotIntegerError();
+
+        const queue = this.getQueue();
+        const queueSize = queue.size;
+        if (queueSize < amount || amount < 1) {
+            throw new RemovalAmountOutOfRangeError();
+        }
+
+        const tracks = this.getTracks().toArray()
+        const tracksToRemove = tracks.slice(queueSize-amount, amount);
+        for (const track of tracksToRemove) {
+            queue.removeTrack(track);
+        }
     };
     clear() {
-
+        const queue = this.getQueue();
+        queue.clear();
     };
     shuffle() {
-
+        const tracks = this.getTracks();
+        tracks.shuffle();
     };
     setRepeatMode(mode: QueueRepeatMode) {
-
+        const queue = this.getQueue();
+        queue.setRepeatMode(mode);
     };
 
     // Playback
     pause(): boolean {
-        throw new Error('Not Implemented.');
+        const node = this.getPlayerNode();
+        return node.pause();
     };
-    previous() {
-
+    async previous() {
+        const history = this.getHistory();
+        await history.previous();
     };
     skip(): Track<unknown> {
-        throw new Error('Not Implemented.');
+        const node = this.getPlayerNode();
+        const track = this.getCurrentTrack();
+        node.skip();
+        return track;
     };
-    seek() {
-
+    async seek(location: number) {
+        const node = this.getPlayerNode();
+        await node.seek(location);
     };
-    speed() {
+    speed(rate: number) {
 
     };
     stop() {
-
+        const queue = this.getQueue();
+        queue.delete();
     };
 }

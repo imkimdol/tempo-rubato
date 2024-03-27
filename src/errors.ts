@@ -25,12 +25,12 @@ export class UserNotInVoiceError extends Error {
     }
 } 
 
-export class NotPlayingError extends Error {
+export class NoQueueError extends Error {
     constructor() {
         const message = 'Bot is currently not playing in this channel.';
         super(message);
-        this.name = "NotPlayingError";
-        Object.setPrototypeOf(this, NotPlayingError.prototype);
+        this.name = "NoQueueError";
+        Object.setPrototypeOf(this, NoQueueError.prototype);
     }
 } 
 
@@ -43,6 +43,15 @@ export class NoHistoryError extends Error {
     }
 } 
 
+export class RemovalAmountOutOfRangeError extends Error {
+    constructor() {
+        const message = 'Amount to remove is too large.';
+        super(message);
+        this.name = "RemovalAmountOutOfRangeError";
+        Object.setPrototypeOf(this, RemovalAmountOutOfRangeError.prototype);
+    }
+} 
+
 export class RateOutOfRangeError extends Error {
     constructor() {
         const message = 'Playback rate is too extreme.';
@@ -51,3 +60,12 @@ export class RateOutOfRangeError extends Error {
         Object.setPrototypeOf(this, RateOutOfRangeError.prototype);
     }
 } 
+
+export class IsNotIntegerError extends Error {
+    constructor() {
+        const message = 'Given number is not an integer.';
+        super(message);
+        this.name = "NotIntegerError";
+        Object.setPrototypeOf(this, IsNotIntegerError.prototype);
+    }
+}
