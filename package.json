@@ -19,8 +19,14 @@
     "youtube-ext": "^1.1.16"
   },
   "scripts": {
+    "compile": "tsc",
     "deploy": "node src/scripts/deployCommands.js",
     "start": "nodemon src/index.js",
     "start-runtime": "pm2-runtime src/index.js"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.3",
+    "@types/node": "^20.11.30",
+    "typescript": "^5.4.3"
   }
 }
