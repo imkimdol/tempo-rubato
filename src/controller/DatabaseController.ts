@@ -13,7 +13,6 @@ export class DatabaseController {
     private constructor() {
         this.database = new Level(DatabaseController.location, DatabaseController.options);
     }
-
     static getInstance(): DatabaseController {
         if (!this.instance) this.instance = new DatabaseController();
         return this.instance;
@@ -22,12 +21,13 @@ export class DatabaseController {
     setBank(query: string, userId: string, bank: DatabaseBanks) {
         
     }
-
     getBank(userId: string, bank: DatabaseBanks): string {
         throw new Error('Not Implemented.');
     }
-
-    setSpeed(speed: number, guildId: string) {
+    setPlayRate(rate: number, guildId: string) {
         
+    }
+    getPlayRate(guildId: string): number {
+        throw new Error('Not Implemented.');
     }
 }
