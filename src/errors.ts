@@ -52,7 +52,15 @@ export class IsNotIntegerError extends Error {
     }
 }
 
-export class CommandOptionIsNullError extends Error {
+export class UnreachableCodeReachedError extends Error {
+    constructor(message: string) {
+        super(message + ' This code should be unreachable.');
+        this.name = "UnreachableCodeReachedError";
+        Object.setPrototypeOf(this, UnreachableCodeReachedError.prototype);
+    }
+}
+
+export class CommandOptionIsNullError extends UnreachableCodeReachedError {
     constructor(optionName: string) {
         const message = `Command option ${optionName} is null.`;
         super(message);

@@ -1,11 +1,18 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
-import { CommandOptionIsNullError } from "../../errors";
+import { CommandOptionIsNullError, UnreachableCodeReachedError } from "../../errors";
 import { DatabaseBanks, DatabaseController } from "../../controller/DatabaseController";
 
 const bankOptionName = 'bank';
 const queryOptionName = 'query';
+export const bankChoices = [
+    { name: 'Bank 1', value: 0 },
+    { name: 'Bank 2', value: 1 },
+    { name: 'Bank 3', value: 2 },
+    { name: 'Bank 4', value: 3 },
+    { name: 'Bank 5', value: 4 }
+];
 const data = new SlashCommandBuilder()
     .setName('register')
     .setDescription('Registers a search query to your favourites.')
@@ -13,13 +20,8 @@ const data = new SlashCommandBuilder()
         option.setName(bankOptionName)
             .setDescription('Storage bank to register at.')
             .setRequired(true)
-            .addChoices(
-                { name: 'Bank 1', value: 0 },
-                { name: 'Bank 2', value: 1 },
-                { name: 'Bank 3', value: 2 },
-                { name: 'Bank 4', value: 3 },
-                { name: 'Bank 5', value: 4 },
-            ))
+            .addChoices(...bankChoices)
+    )
     .addStringOption(option =>
         option.setName(queryOptionName).setDescription('Search query to register.').setRequired(true)
     );
@@ -44,7 +46,7 @@ module.exports = {
         const query = interaction.options.getString(queryOptionName);
         if (!bank) throw new CommandOptionIsNullError(bankOptionName);
         if (!query) throw new CommandOptionIsNullError(queryOptionName);
-        if (!(bank in DatabaseBanks)) throw new Error('Bank index is out of expected range (0-4).');
+        if (!(bank in DatabaseBanks)) throw new UnreachableCodeReachedError('Bank index is out of expected range (0-4).');
 
         try {
             handleCommand(interaction, i => callback(i, bank, query), options);

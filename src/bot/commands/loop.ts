@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
-import { CommandOptionIsNullError } from "../../errors";
+import { CommandOptionIsNullError, UnreachableCodeReachedError } from "../../errors";
 import { QueueRepeatMode } from "discord-player";
 import { PlayerController } from "../../controller/PlayerController";
 
@@ -38,7 +38,7 @@ module.exports = {
     async execute(interaction: ChatInputCommandInteraction, client: CommandsClient) {
         const mode = interaction.options.getNumber(modeOptionName);
         if (!mode) throw new CommandOptionIsNullError(modeOptionName);
-        if (!(mode in QueueRepeatMode)) throw new Error('Mode index is out of expected range (0-3).');
+        if (!(mode in QueueRepeatMode)) throw new UnreachableCodeReachedError('Mode index is out of expected range (0-3).');
 
         try {
             handleCommand(interaction, i => callback(i, mode), options);

@@ -7,6 +7,7 @@ const data = new SlashCommandBuilder()
     .setName('shuffle')
     .setDescription('Shuffles the queue.');
 const options: HandleCommandOptions = {
+    ephemeral: false,
     checkInVoice: true,
     timeoutMultiplier: 1
 };
