@@ -7,24 +7,6 @@ export class PlayerNotInitializedError extends Error {
     }
 } 
 
-export class UnsupportedChannelTypeError extends Error {
-    constructor() {
-        const message = 'This command is not supported in this channel.';
-        super(message);
-        this.name = "UnsupportedChannelTypeError";
-        Object.setPrototypeOf(this, UnsupportedChannelTypeError.prototype);
-    }
-} 
-
-export class UserNotInVoiceError extends Error {
-    constructor() {
-        const message = 'You need to be in a Voice Channel.';
-        super(message);
-        this.name = "UserNotInVoiceError";
-        Object.setPrototypeOf(this, UserNotInVoiceError.prototype);
-    }
-} 
-
 export class NoQueueError extends Error {
     constructor() {
         const message = 'Bot is currently not playing in this channel.';
@@ -59,7 +41,7 @@ export class RateOutOfRangeError extends Error {
         this.name = "RateOutOfRangeError";
         Object.setPrototypeOf(this, RateOutOfRangeError.prototype);
     }
-} 
+}
 
 export class IsNotIntegerError extends Error {
     constructor() {
@@ -67,5 +49,14 @@ export class IsNotIntegerError extends Error {
         super(message);
         this.name = "NotIntegerError";
         Object.setPrototypeOf(this, IsNotIntegerError.prototype);
+    }
+}
+
+export class CommandOptionIsNullError extends Error {
+    constructor(optionName: string) {
+        const message = `Command option ${optionName} is null.`;
+        super(message);
+        this.name = "CommandOptionIsNullError";
+        Object.setPrototypeOf(this, CommandOptionIsNullError.prototype);
     }
 }
