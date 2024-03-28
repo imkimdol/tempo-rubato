@@ -19,13 +19,13 @@ export class DatabaseController {
     };
 
     setBank(query: string, userId: string, bank: DatabaseBanks) {
-        
+        throw new Error('Not Implemented.');
     }
     getBank(userId: string, bank: DatabaseBanks): string {
         throw new Error('Not Implemented.');
     }
     setPlayRate(rate: number, guildId: string) {
-        
+        throw new Error('Not Implemented.');
     }
     getPlayRate(guildId: string): number {
         throw new Error('Not Implemented.');

@@ -31,6 +31,12 @@ export class PlayerController {
         PlayerController.checkPlayerInitialized();
         this.guildId = guildId;
     };
+    static createInstance(interaction: ChatInputCommandInteraction) {
+        const guildId = interaction.guildId;
+        if (!guildId) throw new Error('guildId does not exist.');
+
+        return new PlayerController(guildId);
+    }
 
     static async initializePlayer(client: CommandsClient, verbose: boolean = false) {
         this.player = new Player(client, this.playerOptions);
@@ -133,7 +139,7 @@ export class PlayerController {
     playNext(query: string, interaction: ChatInputCommandInteraction): Track<unknown> {
         throw new Error('Not Implemented.');
     };
-    removeLast(amount: number) {
+    removeLast(amount: number): Track<unknown>[] {
         if (!Number.isInteger(amount)) throw new IsNotIntegerError();
 
         const queue = this.getQueue();
@@ -147,6 +153,8 @@ export class PlayerController {
         for (const track of tracksToRemove) {
             queue.removeTrack(track);
         }
+
+        return tracksToRemove;
     };
     clear() {
         const queue = this.getQueue();
@@ -166,9 +174,20 @@ export class PlayerController {
         const node = this.getPlayerNode();
         return node.pause();
     };
-    async previous() {
+    async previous(): Promise<Track<unknown>> {
+        const track = this.getCurrentTrack();
         const history = this.getHistory();
+
+        // TODO add guard for no tracks in history
+        // try {
+        //     await history.previous();
+        // } catch (err) {
+        //     if (err.name === 'ERR_NO_RESULT') return editReply('There is no history.', interaction, client)
+        //     throw err;
+        // }
+
         await history.previous();
+        return track;
     };
     skip(): Track<unknown> {
         const node = this.getPlayerNode();
@@ -177,11 +196,28 @@ export class PlayerController {
         return track;
     };
     async seek(location: number) {
+        // TODO add guards for seek location (if needed)
+        // if (location * 1000 >= queue.currentTrack.durationMS) {
+        //     await queue.node.seek(queue.currentTrack.durationMS);
+        // } else {
+        //     await queue.node.seek(location * 1000);
+        // }
+        
         const node = this.getPlayerNode();
         await node.seek(location);
     };
-    speed(rate: number) {
+    playbackSpeed(rate: number) {
+        // if (rate < 0.5 || rate > 2.0) {
+        //     return interaction.editReply('Playback rate is too extreme.');
+        // }
 
+        // const queue = useQueue(interaction.guild.id);
+        // client.playRates[interaction.guild.id] = rate;
+        // if (queue) {      
+        //     queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${rate}`]);
+        //     queue.filters.ffmpeg.setFilters([]);
+        // }
+        throw new Error('Not Implemented.');
     };
     stop() {
         const queue = this.getQueue();
