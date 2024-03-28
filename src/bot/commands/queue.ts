@@ -5,8 +5,8 @@ import { PlayerController } from "../../controller/PlayerController";
 import { addRows } from "../helpers/message";
 
 const data = new SlashCommandBuilder()
-    .setName('history')
-    .setDescription('View playback history.');
+    .setName('queue')
+    .setDescription('View queue.');
 const options: HandleCommandOptions = {
     ephemeral: false,
     checkInVoice: false,

@@ -3,16 +3,10 @@ import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
 import { CommandOptionIsNullError, UnreachableCodeReachedError } from "../../errors";
 import { DatabaseBanks, DatabaseController } from "../../controller/DatabaseController";
+import { bankChoices } from "../helpers/message";
 
 const bankOptionName = 'bank';
 const queryOptionName = 'query';
-export const bankChoices = [
-    { name: 'Bank 1', value: 0 },
-    { name: 'Bank 2', value: 1 },
-    { name: 'Bank 3', value: 2 },
-    { name: 'Bank 4', value: 3 },
-    { name: 'Bank 5', value: 4 }
-];
 const data = new SlashCommandBuilder()
     .setName('register')
     .setDescription('Registers a search query to your favourites.')

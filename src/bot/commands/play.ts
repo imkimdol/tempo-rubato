@@ -3,10 +3,9 @@ import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
 import { CommandOptionIsNullError, UnreachableCodeReachedError } from "../../errors";
 import { DatabaseBanks, DatabaseController } from "../../controller/DatabaseController";
-import { bankChoices } from "./register";
 import { getAverageColor } from "fast-average-color-node";
 import { PlayerController } from "../../controller/PlayerController";
-import { addRows } from "../helpers/message";
+import { addRows, bankChoices } from "../helpers/message";
 
 const searchSubCommandName = 'search';
 const nextSubCommandName = 'next';
@@ -45,7 +44,7 @@ const data = new SlashCommandBuilder()
     )
 );
 const options: HandleCommandOptions = {
-    ephemeral: true,
+    ephemeral: false,
     checkInVoice: true,
     timeoutMultiplier: 1
 };

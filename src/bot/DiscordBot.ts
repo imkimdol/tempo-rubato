@@ -9,7 +9,7 @@ export default class DiscordBot {
 
     constructor() {
         dotenv.config();
-        this.client = new CommandsClient({ intents: [GatewayIntentBits.Guilds] }, new Collection());
+        this.client = new CommandsClient({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] }, new Collection());
 
         this.loadCommands();
         this.loadEvents();

@@ -20,9 +20,9 @@
   },
   "scripts": {
     "compile": "tsc",
-    "deploy": "node src/scripts/deployCommands.js",
-    "start": "nodemon src/index.js",
-    "start-runtime": "pm2-runtime src/index.js"
+    "deploy": "node dist/scripts/deployCommands.js",
+    "start": "nodemon dist/index.js",
+    "start-runtime": "pm2-runtime dist/index.js"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.3",

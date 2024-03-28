@@ -14,7 +14,7 @@ import path from 'path';
 import { REST, Routes } from 'discord.js';
 
 const args = process.argv.slice(2);
-const commandsPath = path.join(__dirname, '../commands');
+const commandsPath = path.join(__dirname, '../bot/commands');
 const commands = [];
 // Grab all the command files from the commands directory
 const commandFiles = glob.sync('**/*.js', { cwd:commandsPath });

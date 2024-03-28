@@ -8,7 +8,7 @@ import { PlayerController } from "../../controller/PlayerController";
 const repeatModeNames = ['off', 'track', 'queue', 'autoplay'];
 const modeOptionName = 'mode';
 const data = new SlashCommandBuilder()
-    .setName('loop')
+    .setName('repeat')
     .setDescription('Sets repeat mode.')
     .addIntegerOption(option =>
         option.setName(modeOptionName)

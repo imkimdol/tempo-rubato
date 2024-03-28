@@ -6,8 +6,8 @@ import { CommandOptionIsNullError } from "../../errors";
 
 const locationOptionName = 'location';
 const data = new SlashCommandBuilder()
-    .setName('speed')
-    .setDescription('Sets playback rate.')
+    .setName('seek')
+    .setDescription('Begins playing at specified location.')
     .addNumberOption(option =>
         option.setName(locationOptionName).setDescription('Seek location (seconds).').setRequired(true)
     );
