@@ -1,6 +1,6 @@
 import { GuildQueue, GuildQueueHistory, GuildQueuePlayerNode, Player, PlayerInitOptions, PlayerNodeInitializationResult, PlayerNodeInitializerOptions, QueueRepeatMode, Track, useHistory, useQueue } from "discord-player";
 import CommandsClient from "../bot/CommandsClient";
-import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RemovalAmountOutOfRangeError, ValueNotFoundError } from "../errors";
+import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RateOutOfRangeError, RemovalAmountOutOfRangeError, ValueNotFoundError } from "../errors";
 import { playerStart } from "../bot/events/playerStart";
 import { ChatInputCommandInteraction, CommandInteraction, GuildMember, GuildVoiceChannelResolvable, VoiceBasedChannel } from "discord.js";
 import { DatabaseController } from "./DatabaseController";
@@ -166,14 +166,14 @@ export class PlayerController {
     };
 
     // Playback
-    static setFFmpegSampleRate(queue: GuildQueue) {
+    static async setFFmpegSampleRate(queue: GuildQueue) {
         let rate;
         try {
             const dbController = DatabaseController.getInstance();
-            rate = dbController.getPlayRate(queue.guild.id);
+            rate = await dbController.getPlayRate(queue.guild.id);
         } catch (e) {
             if (e instanceof ValueNotFoundError) rate = 1;
-            throw e;
+            else throw e;
         }
         queue.filters.ffmpeg.setInputArgs(['-af', `aresample=44100,asetrate=44100*${rate}`]);
         queue.filters.ffmpeg.setFilters([]);
@@ -214,19 +214,14 @@ export class PlayerController {
         const node = this.getPlayerNode();
         await node.seek(location);
     };
-    playbackSpeed(rate: number) {
-        // TODO implement
-        // if (rate < 0.5 || rate > 2.0) {
-        //     return interaction.editReply('Playback rate is too extreme.');
-        // }
+    async playbackSpeed(rate: number) {
+        if (rate < 0.5 || rate > 2.0) throw new RateOutOfRangeError();
 
-        // const queue = useQueue(interaction.guild.id);
-        // client.playRates[interaction.guild.id] = rate;
-        // if (queue) {      
-        //     queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${rate}`]);
-        //     queue.filters.ffmpeg.setFilters([]);
-        // }
-        throw new Error('Not Implemented.');
+        const dbController = DatabaseController.getInstance();
+        await dbController.setPlayRate(rate, this.guildId);
+
+        const queue = this.getQueue();
+        PlayerController.setFFmpegSampleRate(queue);
     };
     stop() {
         const queue = this.getQueue();

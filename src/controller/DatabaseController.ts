@@ -52,7 +52,7 @@ export class DatabaseController {
             if (!Number.isFinite(rate)) throw new InvalidValueError(`Rate value ${rate} retrieved from database with key ${key} is invalid.`);
             return rate;
         } catch (e) {
-            if (e instanceof Error && e.message === 'LEVEL_NOT_FOUND') throw new ValueNotFoundError();
+            if (e instanceof Error && e.message.includes('NotFound')) throw new ValueNotFoundError();
             throw e;
         }
     }
