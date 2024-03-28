@@ -2,7 +2,7 @@ import { GuildQueue, GuildQueueHistory, GuildQueuePlayerNode, Player, PlayerInit
 import CommandsClient from "../bot/CommandsClient";
 import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RemovalAmountOutOfRangeError } from "../errors";
 import { playerStart } from "../bot/events/playerStart";
-import { CommandInteraction, GuildMember, GuildVoiceChannelResolvable } from "discord.js";
+import { ChatInputCommandInteraction, CommandInteraction, GuildMember, GuildVoiceChannelResolvable, VoiceBasedChannel } from "discord.js";
 
 export class PlayerController {
     private static readonly playerOptions: PlayerInitOptions = {
@@ -11,7 +11,7 @@ export class PlayerController {
             highWaterMark: 1 << 25
         }
     };
-    private static getNodeOptions(interaction: CommandInteraction): PlayerNodeInitializerOptions<any> {
+    private static getPlayerNodeOptions(interaction: CommandInteraction): PlayerNodeInitializerOptions<any> {
         return {
             requestedBy: interaction.user,
             connectionOptions: {
@@ -19,8 +19,7 @@ export class PlayerController {
             },
             nodeOptions: {
                 metadata: interaction.channel,
-                bufferingTimeout: 10000,
-                skipOnNoStream: false
+                bufferingTimeout: 10000
             }
         }
     }
@@ -98,7 +97,8 @@ export class PlayerController {
         return this.getQueue().tracks;
     };
     getCurrentTrack(): Track<unknown> {
-        return this.getQueue().currentTrack;
+        // TODO add guard for null
+        return this.getQueue().currentTrack as Track<unknown>;
     };
     getHistory(): GuildQueueHistory<unknown> {
         const history = useHistory(this.guildId);
@@ -111,16 +111,17 @@ export class PlayerController {
         try {
             return await PlayerController.player.play(channel, query, options);
         } catch (err) {
-            if (err.name === 'ERR_NO_RESULT') return null;
+            if (err instanceof Error && err.name === 'ERR_NO_RESULT') return null;
             throw err;
         }
     };
-    async playSearch(queries: string[], interaction: CommandInteraction): Promise<PlayerNodeInitializationResult<any>[]> {
+    async playSearch(queries: string[], interaction: ChatInputCommandInteraction): Promise<PlayerNodeInitializationResult<any>[]> {
         const results = []
 
+        // TODO check for nulls (member and channel)
         const member = interaction.member as GuildMember;
-        const channel = member.voice.channel;
-        const options = PlayerController.getNodeOptions(interaction);
+        const channel = member.voice.channel as VoiceBasedChannel;
+        const options = PlayerController.getPlayerNodeOptions(interaction);
 
         for (const query of queries) {
             const result = await this.play(query, channel, options);
@@ -129,7 +130,7 @@ export class PlayerController {
 
         return results;
     };
-    playNext(query: string, interaction: CommandInteraction): Track<unknown> {
+    playNext(query: string, interaction: ChatInputCommandInteraction): Track<unknown> {
         throw new Error('Not Implemented.');
     };
     removeLast(amount: number) {
