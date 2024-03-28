@@ -1,11 +1,12 @@
 import { ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
-import { CommandOptionIsNullError, UnreachableCodeReachedError } from "../../errors";
+import { CommandOptionIsNullError, InvalidValueError, ValueNotFoundError } from "../../errors";
 import { DatabaseBanks, DatabaseController } from "../../controller/DatabaseController";
 import { getAverageColor } from "fast-average-color-node";
 import { PlayerController } from "../../controller/PlayerController";
 import { addRows, bankChoices } from "../helpers/message";
+import { error } from "console";
 
 const searchSubCommandName = 'search';
 const nextSubCommandName = 'next';
@@ -91,11 +92,14 @@ async function bankCallback(interaction: ChatInputCommandInteraction, bank: Data
     const controller = DatabaseController.getInstance();
     const userId = interaction.user.id;
 
-    // TODO add guard for no entries in bank
-    const query = controller.getBank(userId, bank);
-
-    const reply = await searchCallback(interaction, query);
-    return reply;
+    try {
+        const query = await controller.getBank(userId, bank);
+        const reply = await searchCallback(interaction, query);
+        return reply;
+    } catch (e) {
+        if (error instanceof ValueNotFoundError) return 'No query was found at this bank.';
+        throw e;
+    }
 };
 
 module.exports = {
@@ -120,12 +124,12 @@ module.exports = {
             case favouritesSubCommandName:
                 const bank = interaction.options.getNumber(bankOptionName);
                 if (!bank) throw new CommandOptionIsNullError(bankOptionName);
-                if (!(bank in DatabaseBanks)) throw new UnreachableCodeReachedError('Bank index is out of expected range (0-4).');
+                if (!(bank in DatabaseBanks)) throw new InvalidValueError('Bank index is out of expected range (0-4).');
                 callback = i => bankCallback(i, bank);
 
                 break;
             default:
-                throw new UnreachableCodeReachedError('No valid subcommand was selected.');
+                throw new InvalidValueError('No valid subcommand was selected.');
         }
 
         try {

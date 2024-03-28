@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
-import { CommandOptionIsNullError, UnreachableCodeReachedError } from "../../errors";
+import { CommandOptionIsNullError, InvalidValueError } from "../../errors";
 import { DatabaseBanks, DatabaseController } from "../../controller/DatabaseController";
 import { bankChoices } from "../helpers/message";
 
@@ -40,7 +40,7 @@ module.exports = {
         const query = interaction.options.getString(queryOptionName);
         if (!bank) throw new CommandOptionIsNullError(bankOptionName);
         if (!query) throw new CommandOptionIsNullError(queryOptionName);
-        if (!(bank in DatabaseBanks)) throw new UnreachableCodeReachedError('Bank index is out of expected range (0-4).');
+        if (!(bank in DatabaseBanks)) throw new InvalidValueError('Bank index is out of expected range (0-4).');
 
         try {
             handleCommand(interaction, i => callback(i, bank, query), options);

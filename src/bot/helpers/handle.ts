@@ -53,10 +53,7 @@ export function handleError(error: Error, interaction: ChatInputCommandInteracti
     console.error(error);
 
     try {
-        const owner = process.env.OWNER_ID;
-        const stackMessage = '```javascript\n' + error.stack + '```';
-        if (owner) client.users.send(owner, stackMessage);
-    
+        sendErrorToServerOwner(error, client);
         const messageToSender = process.env.ERROR_MESSAGE;
         if (messageToSender) editReply(messageToSender, interaction, errorTimeoutMultiplier);
     } catch (e) {
@@ -64,6 +61,11 @@ export function handleError(error: Error, interaction: ChatInputCommandInteracti
         console.error(e);
     }
 };
+export function sendErrorToServerOwner(error: Error, client: CommandsClient) {
+    const owner = process.env.OWNER_ID;
+    const stackMessage = '```javascript\n' + error.stack + '```';
+    if (owner) client.users.send(owner, stackMessage);
+}
 export function scheduleMessageForDeletion(message: Message, timeoutMultiplier: number) {
     let timeout = defaultTimeout;
     try {
@@ -83,7 +85,6 @@ export function scheduleMessageForDeletion(message: Message, timeoutMultiplier: 
         }, timeout * timeoutMultiplier);
     }
 };
-
 async function editReply(content: MessageContent, interaction: ChatInputCommandInteraction, timeoutMultiplier: number) {
     const message = await interaction.editReply(content);
     scheduleMessageForDeletion(message, timeoutMultiplier);

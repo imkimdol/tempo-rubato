@@ -1,8 +1,9 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, Embed, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import CommandsClient from "../CommandsClient";
 import { HandleCommandOptions, MessageContent, handleCommand, handleError } from "../helpers/handle";
 import { PlayerController } from "../../controller/PlayerController";
 import { CommandOptionIsNullError } from "../../errors";
+import { addRows } from "../helpers/message";
 
 const nOptionName = 'n';
 const data = new SlashCommandBuilder()
@@ -18,18 +19,15 @@ const options: HandleCommandOptions = {
 };
 async function callback(interaction: ChatInputCommandInteraction, n: number): Promise<MessageContent> {
     const controller = PlayerController.createInstance(interaction);
-    controller.playbackSpeed(n);
+    const tracks = controller.removeLast(n);
 
-    const reply = `Removed ${n} song(s).`;
-
-    // TODO embed for removed songs
-    // const embed = new EmbedBuilder();
-    // embed.setTitle(`Removed ${n} Song(s)`)
-    //     .setColor(0xDCD0FF)
-    //     .addFields(...addRows(tracks, 12));
+    // TODO clean up embed building
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Removed ${n} Song(s)`)
+        .setColor(0xDCD0FF)
+        .addFields(...addRows(tracks, 12));
         
-    // editReply({ embeds: [embed] }, interaction, client);
-
+    const reply = { embeds: [embed] };
     return reply;
 };
 

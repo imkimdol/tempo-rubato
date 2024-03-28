@@ -1,8 +1,9 @@
 import { GuildQueue, GuildQueueHistory, GuildQueuePlayerNode, Player, PlayerInitOptions, PlayerNodeInitializationResult, PlayerNodeInitializerOptions, QueueRepeatMode, Track, useHistory, useQueue } from "discord-player";
 import CommandsClient from "../bot/CommandsClient";
-import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RemovalAmountOutOfRangeError } from "../errors";
+import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RemovalAmountOutOfRangeError, ValueNotFoundError } from "../errors";
 import { playerStart } from "../bot/events/playerStart";
 import { ChatInputCommandInteraction, CommandInteraction, GuildMember, GuildVoiceChannelResolvable, VoiceBasedChannel } from "discord.js";
+import { DatabaseController } from "./DatabaseController";
 
 export class PlayerController {
     private static readonly playerOptions: PlayerInitOptions = {
@@ -41,26 +42,19 @@ export class PlayerController {
     static async initializePlayer(client: CommandsClient, verbose: boolean = false) {
         this.player = new Player(client, this.playerOptions);
         await this.player.extractors.loadDefault();
-        this.attachEventListeners();
+        this.attachEventListeners(client);
         if (verbose) this.attachDebugListeners();
     };
     private static checkPlayerInitialized() {
         if (this.player === undefined) throw new PlayerNotInitializedError();
     }
-    private static attachEventListeners() {
+    private static attachEventListeners(client: CommandsClient) {
         this.checkPlayerInitialized();
 
         this.player.events.on('playerStart', async (queue, track) => {
-            playerStart(track, queue.metadata.channel);
+            playerStart(track, queue, client);
         });
-        this.player.events.on('queueCreate', queue => {
-            // TODO implement
-            // const playRate = playRates[queue.guild.id];
-            // if (playRate !== 1) {
-            //     queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
-            //     queue.filters.ffmpeg.setFilters([]);
-            // }
-        });
+        this.player.events.on('queueCreate', PlayerController.setFFmpegSampleRate);
     }
     private static attachDebugListeners() {
         this.checkPlayerInitialized();
@@ -172,6 +166,18 @@ export class PlayerController {
     };
 
     // Playback
+    static setFFmpegSampleRate(queue: GuildQueue) {
+        let rate;
+        try {
+            const dbController = DatabaseController.getInstance();
+            rate = dbController.getPlayRate(queue.guild.id);
+        } catch (e) {
+            if (e instanceof ValueNotFoundError) rate = 1;
+            throw e;
+        }
+        queue.filters.ffmpeg.setInputArgs(['-af', `aresample=44100,asetrate=44100*${rate}`]);
+        queue.filters.ffmpeg.setFilters([]);
+    };
     pause(): boolean {
         const node = this.getPlayerNode();
         return node.pause();

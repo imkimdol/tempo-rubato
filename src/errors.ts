@@ -52,19 +52,28 @@ export class IsNotIntegerError extends Error {
     }
 }
 
-export class UnreachableCodeReachedError extends Error {
+export class InvalidValueError extends Error {
     constructor(message: string) {
         super(message + ' This code should be unreachable.');
         this.name = "UnreachableCodeReachedError";
-        Object.setPrototypeOf(this, UnreachableCodeReachedError.prototype);
+        Object.setPrototypeOf(this, InvalidValueError.prototype);
     }
 }
 
-export class CommandOptionIsNullError extends UnreachableCodeReachedError {
+export class CommandOptionIsNullError extends InvalidValueError {
     constructor(optionName: string) {
         const message = `Command option ${optionName} is null.`;
         super(message);
         this.name = "CommandOptionIsNullError";
         Object.setPrototypeOf(this, CommandOptionIsNullError.prototype);
+    }
+}
+
+export class ValueNotFoundError extends Error {
+    constructor() {
+        const message = 'Value with the provided key was not found in the database.';
+        super(message);
+        this.name = "ValueNotFoundError";
+        Object.setPrototypeOf(this, ValueNotFoundError.prototype);
     }
 }
