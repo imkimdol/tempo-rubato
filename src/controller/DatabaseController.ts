@@ -19,15 +19,19 @@ export class DatabaseController {
     };
 
     setBank(query: string, userId: string, bank: DatabaseBanks) {
+        // TODO implement
         throw new Error('Not Implemented.');
     }
     getBank(userId: string, bank: DatabaseBanks): string {
+        // TODO implement
         throw new Error('Not Implemented.');
     }
     setPlayRate(rate: number, guildId: string) {
+        // TODO implement
         throw new Error('Not Implemented.');
     }
     getPlayRate(guildId: string): number {
+        // TODO implement
         throw new Error('Not Implemented.');
     }
 }

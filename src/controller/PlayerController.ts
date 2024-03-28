@@ -54,6 +54,7 @@ export class PlayerController {
             playerStart(track, queue.metadata.channel);
         });
         this.player.events.on('queueCreate', queue => {
+            // TODO implement
             // const playRate = playRates[queue.guild.id];
             // if (playRate !== 1) {
             //     queue.filters.ffmpeg.setInputArgs(['-af', `aresample=48000,asetrate=48000*${playRate}`]);
@@ -137,6 +138,7 @@ export class PlayerController {
         return results;
     };
     playNext(query: string, interaction: ChatInputCommandInteraction): Track<unknown> {
+        // TODO implement
         throw new Error('Not Implemented.');
     };
     removeLast(amount: number): Track<unknown>[] {
@@ -207,6 +209,7 @@ export class PlayerController {
         await node.seek(location);
     };
     playbackSpeed(rate: number) {
+        // TODO implement
         // if (rate < 0.5 || rate > 2.0) {
         //     return interaction.editReply('Playback rate is too extreme.');
         // }
