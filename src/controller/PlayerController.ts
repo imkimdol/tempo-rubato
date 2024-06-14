@@ -1,4 +1,4 @@
-import { GuildQueue, GuildQueueHistory, GuildQueuePlayerNode, Player, PlayerInitOptions, PlayerNodeInitializationResult, PlayerNodeInitializerOptions, QueueRepeatMode, Track, useHistory, useQueue } from "discord-player";
+import { AudioFilters, GuildQueue, GuildQueueHistory, GuildQueuePlayerNode, Player, PlayerInitOptions, PlayerNodeInitializationResult, PlayerNodeInitializerOptions, QueueRepeatMode, Track, useHistory, useQueue } from "discord-player";
 import CommandsClient from "../bot/CommandsClient";
 import { IsNotIntegerError, NoHistoryError, NoQueueError, PlayerNotInitializedError, RateOutOfRangeError, RemovalAmountOutOfRangeError, ValueNotFoundError } from "../errors";
 import { playerStart } from "../bot/events/playerStart";
@@ -6,6 +6,7 @@ import { ChatInputCommandInteraction, CommandInteraction, GuildMember, GuildVoic
 import { DatabaseController } from "./DatabaseController";
 
 export class PlayerController {
+    private static readonly baseSampleRate = 48000;
     private static readonly playerOptions: PlayerInitOptions = {
         ytdlOptions: {
             quality: "highestaudio",
@@ -16,11 +17,13 @@ export class PlayerController {
         return {
             requestedBy: interaction.user,
             connectionOptions: {
-                deaf: false,
+                deaf: true,
             },
             nodeOptions: {
                 metadata: interaction.channel,
-                bufferingTimeout: 10000
+                bufferingTimeout: 10000,
+                disableResampler: false,
+                resampler: 48000
             }
         }
     }
@@ -175,12 +178,19 @@ export class PlayerController {
             if (e instanceof ValueNotFoundError) rate = 1;
             else throw e;
         }
-        queue.filters.ffmpeg.setInputArgs(['-af', `aresample=44100,asetrate=44100*${rate}`]);
-        queue.filters.ffmpeg.setFilters([]);
+        
+        AudioFilters.define("playrate", `aresample=${PlayerController.baseSampleRate},asetrate=${PlayerController.baseSampleRate}*${rate}`);
+        //@ts-ignore
+        if (queue.filters.ffmpeg.isDisabled('playrate')) await queue.filters.ffmpeg.toggle('playrate');
+        else await queue.filters.triggerReplay();
     };
-    pause(): boolean {
+    pause() {
         const node = this.getPlayerNode();
-        return node.pause();
+        node.pause();
+    };
+    unpause() {
+        const node = this.getPlayerNode();
+        node.resume();
     };
     async previous(): Promise<Track<unknown>> {
         const track = this.getCurrentTrack();
@@ -221,7 +231,7 @@ export class PlayerController {
         await dbController.setPlayRate(rate, this.guildId);
 
         const queue = this.getQueue();
-        PlayerController.setFFmpegSampleRate(queue);
+        await PlayerController.setFFmpegSampleRate(queue);
     };
     stop() {
         const queue = this.getQueue();

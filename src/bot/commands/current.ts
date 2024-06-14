@@ -28,7 +28,8 @@ async function callback(interaction: ChatInputCommandInteraction): Promise<Messa
     const guildId = interaction.guildId;
     if (!guildId) throw new Error('guildId does not exist.');
     const dbController = DatabaseController.getInstance();
-    const footerText = `${progressBar}\nRequested by ${user.username} | ${dbController.getPlayRate(guildId)}x | ${track.source}`;
+    const playrate = await dbController.getPlayRate(guildId);
+    const footerText = `${progressBar}\nRequested by ${user.username} | ${playrate}x | ${track.source}`;
     const embed = new EmbedBuilder();
     embed.setTitle(track.title)
         .setURL(track.url)

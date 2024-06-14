@@ -13,10 +13,8 @@ const options: HandleCommandOptions = {
 };
 async function callback(interaction: ChatInputCommandInteraction): Promise<MessageContent> {
     const controller = PlayerController.createInstance(interaction);
-    const paused = controller.pause();
-
-    const status = paused ? 'Paused' : 'Unpaused';
-    const reply = status + ' playback.';
+    controller.pause();
+    const reply = 'Paused playback.';
     return reply;
 };
 
