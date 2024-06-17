@@ -13,6 +13,7 @@ RUN yarn add sharp --ignore-engines
 
 COPY .env ./
 COPY ./src ./src
+COPY tsconfig.json ./
 RUN yarn run compile
 RUN yarn run deploy all
 
