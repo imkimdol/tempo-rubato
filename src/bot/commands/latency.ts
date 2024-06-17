@@ -1,15 +1,12 @@
-const { SlashCommandBuilder } = require('discord.js');
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import CommandsClient from "../CommandsClient";
 
-
+const data = new SlashCommandBuilder()
+    .setName('latency')
+    .setDescription('Checks the latency of the bot.');
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('latency')
-        .setDescription('Checks the latency of the bot.')
-        .addBooleanOption(option =>
-            option
-                .setName('round_trip')
-                .setDescription('If the check should measure the round trip latency.')),
-    async execute(interaction, client) {
+    data: data,
+    async execute(interaction: ChatInputCommandInteraction, client: CommandsClient) {
         const roundTrip = interaction.options.getBoolean('round_trip') ?? false;
 
         if (roundTrip) {
@@ -18,5 +15,5 @@ module.exports = {
         } else {
             interaction.reply(`Websocket heartbeat: ${client.ws.ping}ms.`);
         }
-    },
+    }
 };
